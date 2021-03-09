@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ncmdump-wasm</title>
+    <script type="module">
+        import init, {dump} from "./wasm/ncmdump_wasm.js";
+        init().then(() => {
+            const file = document.getElementById('file');
+            file.addEventListener('change', readFile);
+        })
+
+        function readFile(event) {
+            const files = event.target.files;
+            const file = files[0];
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const data = new Uint8Array(ev.target.result);
+                const output = dump(data);
+                const dumpedResult = output.result();
+                const metadata = JSON.parse(output.metadata());
+                const extension = output.extension();
+                const dumpedData = output.data();
+
+                console.log("rseult: ", dumpedResult);
+                console.log("metadata: ", metadata);
+                console.log("extension: ", extension);
+
+                let artists = "";
+                let musicName = "";
+
+                if (metadata) {
+                    artists = metadata.artist.map(ar => ar[0]).join("/");
+                    musicName = metadata.musicName;
+
+                }
+                let filename = "";
+
+                if (!artists && !musicName) {
+                    let name = filename.split(".");
+                    name.pop();
+                    name = name.join(".")
+                    filename = `${name}.${extension}`;
+                } else {
+                    filename = `${artists} - ${musicName}.${extension}`
+                }
+
+                const url = URL.createObjectURL(new Blob([dumpedData.buffer], {type: 'application/force-download'}))
+                console.log("url: ", url);
+
+                const outputUrl = document.getElementById('output-url');
+                outputUrl.href = url;
+                outputUrl.download = filename;
+                document.getElementById('output-audio').src = url;
+            }
+            reader.readAsArrayBuffer(file);
+
+        }
+    </script>
+</head>
+<body>
+    <label>选择 .ncm 文件: </label><input id="file" type="file">
+    <audio id="output-audio" controls></audio>
+    <a id="output-url">点此下载</a>
+</body>
+
+<style>
+body {
+	display: flex;
+	justify-content: center;
+    align-items: center;
+}
+#output-audio {
+    margin-left: 5px;
+}
+#output-url {
+    margin-left: 35px;
+}
+</style>
+</html>

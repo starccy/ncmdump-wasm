@@ -1,0 +1,19 @@
+[tasks.build-web]
+args = ["build", "--no-typescript", "--release", "--target", "web", "--out-dir", "wasm"]
+command = "wasm-pack"
+dependencies = ["install-target-wasm32-unknown-unknown", "wasm-pack"]
+
+[tasks.serve]
+command = "basic-http-server"
+args = ["-x"]
+dependencies = ["build-web", "basic-http-server"]
+
+[tasks.basic-http-server]
+install_crate = {crate_name = "basic-http-server", binary = "basic-http-server", test_arg="--help"}
+
+[tasks.wasm-pack]
+install_crate = {crate_name = "wasm-pack", binary = "wasm-pack", test_arg="--help"}
+
+[tasks.install-target-wasm32-unknown-unknown]
+args = ["target", "install", "wasm32-unknown-unknown"]
+command = "rustup"
