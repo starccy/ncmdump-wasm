@@ -1,4 +1,5 @@
 # ncmdump-wasm
+
 Netease Music `.ncm` file unlock.
 
 ## Run
@@ -10,6 +11,10 @@ Then build & run:
 > cargo make serve
 
 Open `http://127.0.0.1:4000` to use.
+
+## Online
+
+Live demo: [ncmdump-wasm-online](https://starccy.github.io/ncmdump-wasm)
 
 ----
 
